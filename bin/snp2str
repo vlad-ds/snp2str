@@ -1,0 +1,58 @@
+import os
+import argparse
+from typing import List
+from snp2str.process import process_files
+from snp2str.exceptions import InputError
+
+REQUIRED_FORMATS = (".ped", ".txt", ".map")
+
+
+def validate_input_files(files: List) -> None:
+    """
+
+    :param files:
+    :return:
+    """
+
+    if len(files) != 3:
+        raise InputError("Must specify exactly 3 files!")
+
+    if not all([file.endswith(REQUIRED_FORMATS) for file in files]):
+        raise InputError("Files must be in the following formats: %s" % str(REQUIRED_FORMATS))
+
+    if sorted(["." + file.split(".")[1] for file in files]) != sorted(REQUIRED_FORMATS):
+        raise InputError("Specify exactly one file for each of these formats: %s" % str(REQUIRED_FORMATS))
+
+    for file in files:
+        if not os.path.exists(file):
+            raise InputError("File not found: %s" % file)
+
+
+def main():
+    print("Welcome to snp2str!")
+    parser = argparse.ArgumentParser(description='TODO')
+    parser.add_argument("files", nargs="*", help="TODO")
+
+    args = parser.parse_args()
+
+    if args.files:
+        input_files = args.files
+    else:
+        print("Input files not specified. Searching for files in current folder...")
+        input_files = [file for file in os.listdir() if file.endswith(REQUIRED_FORMATS)]
+        if input_files:
+            print("Following files found: %s" % input_files)
+        else:
+            raise InputError("Did not find files with required format: %s" % str(REQUIRED_FORMATS))
+
+    print("Validating input files...")
+    validate_input_files(input_files)
+    print("Input files validated successfully.")
+
+    files_map = {file.split(".")[1]: file for file in input_files}
+    process_files(files_map["ped"], files_map["txt"], files_map["map"])
+
+
+if __name__ == "__main__":
+    main()
+
