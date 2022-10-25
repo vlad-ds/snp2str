@@ -6,6 +6,8 @@ from snp2str.exceptions import InputError
 
 REQUIRED_FORMATS = (".ped", ".txt", ".map")
 
+# TODO change CLI to accept populations and header as optional
+
 
 def validate_input_files(files: List) -> None:
     """
