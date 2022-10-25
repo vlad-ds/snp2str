@@ -5,12 +5,11 @@ from collections import OrderedDict
 import pandas as pd
 
 
-# TODO make populations optional
 # TODO make header optional (.map)
 
 def process_files(ped_path: str,
-                  pop_path: str,
-                  map_path: str,
+                  pop_path: str = None,
+                  map_path: str = None,
                   output_path: str = "output.csv") -> None:
     """
 
@@ -24,7 +23,12 @@ def process_files(ped_path: str,
         bases_coding = json.load(file)
 
     header = pd.read_csv(map_path, sep="\t", header=None)[1].values.tolist()
-    populations = pd.read_csv(pop_path, header=None)[0].tolist()
+
+    if pop_path:
+        populations = pd.read_csv(pop_path, header=None)[0].tolist()
+    else:
+        populations = None
+
     sequences = OrderedDict()
 
     with open(ped_path) as file:
@@ -42,7 +46,9 @@ def process_files(ped_path: str,
     print("Parsed %i species with %i bases each" % (len(sequences), n_bases))
 
     assert len(header) == n_bases / 2, "Header size %s does not correspond with chromosome count %s" % (len(header), n_bases / 2)
-    assert len(sequences) == len(populations), "Population number does not correspond"
+
+    if populations:
+        assert len(sequences) == len(populations), "Population number does not correspond"
 
     with open(output_path, "w") as file:
         writer = csv.writer(file, delimiter=" ")
@@ -57,8 +63,13 @@ def process_files(ped_path: str,
 
             # TODO if populations absent, populations[i]] is not here
 
-            row1 = [species, populations[i], *strand1]
-            row2 = [species, populations[i], *strand2]
+            if populations:
+                row1 = [species, populations[i], *strand1]
+                row2 = [species, populations[i], *strand2]
+            else:
+                row1 = [species, *strand1]
+                row2 = [species, *strand2]
+
             writer.writerow(row1)
             writer.writerow(row2)
 
