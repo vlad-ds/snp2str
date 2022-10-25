@@ -10,23 +10,30 @@ import pandas as pd
 def process_files(ped_path: str,
                   pop_path: str = None,
                   map_path: str = None,
+                  add_header: bool = True,
                   output_path: str = "output.csv") -> None:
     """
 
     :param ped_path:
     :param pop_path:
     :param map_path:
+    :param add_header:
     :param output_path:
     :return:
     """
     with open(os.path.join(os.path.dirname(__file__), 'bases_coding.json')) as file:
         bases_coding = json.load(file)
 
-    header = pd.read_csv(map_path, sep="\t", header=None)[1].values.tolist()
+    if map_path:
+        header = pd.read_csv(map_path, sep="\t", header=None)[1].values.tolist()
+    else:
+        print("map_path not specified. Proceeding without header file.")
+        header = None
 
     if pop_path:
         populations = pd.read_csv(pop_path, header=None)[0].tolist()
     else:
+        print("pop_path not specified. Proceeding without populations file.")
         populations = None
 
     sequences = OrderedDict()
@@ -45,7 +52,8 @@ def process_files(ped_path: str,
 
     print("Parsed %i species with %i bases each" % (len(sequences), n_bases))
 
-    assert len(header) == n_bases / 2, "Header size %s does not correspond with chromosome count %s" % (len(header), n_bases / 2)
+    if header:
+        assert len(header) == n_bases / 2, "Header size %s does not correspond with chromosome count %s" % (len(header), n_bases / 2)
 
     if populations:
         assert len(sequences) == len(populations), "Population number does not correspond"
@@ -53,7 +61,10 @@ def process_files(ped_path: str,
     with open(output_path, "w") as file:
         writer = csv.writer(file, delimiter=" ")
         # write header
-        writer.writerow([None, None] + header)
+        if header and add_header:
+            writer.writerow([None, None] + header)
+        if header and not add_header:
+            print("Header was present but add_header is False. Producing output without header.")
         # write each line
         for i, species in enumerate(sequences):
             strand1 = sequences[species][::2]
