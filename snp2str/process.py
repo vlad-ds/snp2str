@@ -55,7 +55,7 @@ def process_files(ped_path: str,
 
             assert len(strand1) == len(strand2), "The two strands contain an unequal number of elements! %i and %i" % (len(strand1), len(strand2))
 
-            #TODO if populations absent, populations[i]] is not here
+            # TODO if populations absent, populations[i]] is not here
 
             row1 = [species, populations[i], *strand1]
             row2 = [species, populations[i], *strand2]
