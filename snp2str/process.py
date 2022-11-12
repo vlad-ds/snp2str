@@ -5,8 +5,6 @@ from collections import OrderedDict
 import pandas as pd
 
 
-# TODO make header optional (.map)
-
 def process_files(ped_path: str,
                   pop_path: str = None,
                   map_path: str = None,
@@ -71,8 +69,6 @@ def process_files(ped_path: str,
             strand2 = sequences[species][1::2]
 
             assert len(strand1) == len(strand2), "The two strands contain an unequal number of elements! %i and %i" % (len(strand1), len(strand2))
-
-            # TODO if populations absent, populations[i]] is not here
 
             if populations:
                 row1 = [species, populations[i], *strand1]
