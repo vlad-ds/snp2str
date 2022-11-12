@@ -4,6 +4,7 @@ from typing import List
 from snp2str.process import process_files
 from snp2str.exceptions import InputError
 
+# ped is required, the other two are optional
 REQUIRED_FORMATS = (".ped", ".txt", ".map")
 
 # TODO change CLI to accept populations and header as optional
@@ -16,14 +17,14 @@ def validate_input_files(files: List) -> None:
     :return:
     """
 
-    if len(files) != 3:
-        raise InputError("Must specify exactly 3 files!")
+    if not 1 <= len(files) <= 3:
+        raise InputError("Must specify between 1 and 3 files!")
+
+    if not any([file.endswith(".ped") for file in files]):
+        raise InputError("Need to specify a .ped file!")
 
     if not all([file.endswith(REQUIRED_FORMATS) for file in files]):
         raise InputError("Files must be in the following formats: %s" % str(REQUIRED_FORMATS))
-
-    if sorted(["." + file.split(".")[1] for file in files]) != sorted(REQUIRED_FORMATS):
-        raise InputError("Specify exactly one file for each of these formats: %s" % str(REQUIRED_FORMATS))
 
     for file in files:
         if not os.path.exists(file):
@@ -33,8 +34,10 @@ def validate_input_files(files: List) -> None:
 def main():
     print("Welcome to snp2str!")
     parser = argparse.ArgumentParser(description='TODO')
-    parser.add_argument("files", nargs="*", help="TODO")
-
+    parser.add_argument("files", nargs="*", help="Insert path for .ped, .map and pop.txt file. "
+                                                 "If omitted, will search for default files in current folder. ")
+    parser.add_argument("--output", type=str, help="Path for the output file. Defaults to ./output.csv")
+    parser.add_argument("--skip-header", dest="header", default_action="store_true", help="Skip header row in output file.")
     args = parser.parse_args()
 
     if args.files:
@@ -42,17 +45,20 @@ def main():
     else:
         print("Input files not specified. Searching for files in current folder...")
         input_files = [file for file in os.listdir() if file.endswith(REQUIRED_FORMATS)]
-        if input_files:
-            print("Following files found: %s" % input_files)
-        else:
-            raise InputError("Did not find files with required format: %s" % str(REQUIRED_FORMATS))
+        if not input_files:
+            raise InputError("Did not find any files with required format: %s" % str(REQUIRED_FORMATS))
 
+    print("Following files found: %s" % input_files)
     print("Validating input files...")
     validate_input_files(input_files)
     print("Input files validated successfully.")
 
     files_map = {file.split(".")[1]: file for file in input_files}
-    process_files(files_map["ped"], files_map["txt"], files_map["map"])
+    process_files(ped_path=files_map["ped"],
+                  pop_path=files_map.get("txt"),
+                  map_path=files_map.get("map"),
+                  add_header=args.header,
+                  output_path=args.output)
 
 
 if __name__ == "__main__":
