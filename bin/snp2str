@@ -34,7 +34,7 @@ def validate_input_files(files: List) -> None:
 def main():
     print("Welcome to snp2str!")
     parser = argparse.ArgumentParser(description='TODO')
-    parser.add_argument("files", nargs="*", help="Insert path for .ped, .map and pop.txt file. "
+    parser.add_argument("files", nargs="*", help="List paths for .ped, .map and pop.txt file. "
                                                  "If omitted, will search for default files in current folder. ")
     parser.add_argument("--output", type=str, help="Path for the output file. Defaults to ./output.csv")
     parser.add_argument("--skip-header", dest="header", action="store_false", help="Skip header row in output file.")
