@@ -19,6 +19,10 @@ def process_files(ped_path: str,
     :param output_path:
     :return:
     """
+
+    if not output_path:
+        output_path = "output.csv"
+
     with open(os.path.join(os.path.dirname(__file__), 'bases_coding.json')) as file:
         bases_coding = json.load(file)
 

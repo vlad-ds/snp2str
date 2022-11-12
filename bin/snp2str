@@ -37,7 +37,7 @@ def main():
     parser.add_argument("files", nargs="*", help="Insert path for .ped, .map and pop.txt file. "
                                                  "If omitted, will search for default files in current folder. ")
     parser.add_argument("--output", type=str, help="Path for the output file. Defaults to ./output.csv")
-    parser.add_argument("--skip-header", dest="header", default_action="store_true", help="Skip header row in output file.")
+    parser.add_argument("--skip-header", dest="header", action="store_false", help="Skip header row in output file.")
     args = parser.parse_args()
 
     if args.files:
