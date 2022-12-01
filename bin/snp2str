@@ -33,7 +33,8 @@ def validate_input_files(files: List) -> None:
 
 def main():
     print("Welcome to snp2str!")
-    parser = argparse.ArgumentParser(description='TODO')
+    description = "Convert PED files to create input format for structure."
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument("files", nargs="*", help="List paths for .ped, .map and pop.txt file. "
                                                  "If omitted, will search for default files in current folder. ")
     parser.add_argument("--output", type=str, help="Path for the output file. Defaults to ./output.csv")
