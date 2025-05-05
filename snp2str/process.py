@@ -3,21 +3,24 @@ import json
 import os
 from collections import OrderedDict
 import pandas as pd
-
+from snp2str.exceptions import InputError
+from collections import Counter
 
 def process_files(ped_path: str,
                   pop_path: str = None,
                   map_path: str = None,
                   add_header: bool = True,
-                  output_path: str = "output.csv") -> None:
+                  output_path: str = "output.csv",
+                  skip_input_header: bool = False) -> None:
     """
 
-    :param ped_path:
-    :param pop_path:
-    :param map_path:
-    :param add_header:
-    :param output_path:
-    :return:
+    :param ped_path: Path to the .ped file
+    :param pop_path: Path to the population file (optional)
+    :param map_path: Path to the .map file (optional)
+    :param add_header: Whether to add a header to the output file
+    :param output_path: Path for the output file
+    :param skip_input_header: Whether to skip the first line in the .ped input file
+    :return: None
     """
 
     if not output_path:
@@ -41,7 +44,14 @@ def process_files(ped_path: str,
     sequences = OrderedDict()
 
     with open(ped_path) as file:
-        for line in file.readlines():
+        lines = file.readlines()
+        # Skip the first line if skip_input_header is True
+        start_line = 1 if skip_input_header else 0
+        
+        if skip_input_header and len(lines) > 0:
+            print(f"Skipping first line in .ped file: {lines[0].strip()}")
+            
+        for line in lines[start_line:]:
             elements = line.split()
             cultivar_name = elements[1]
             sequence = elements[6:]
@@ -50,7 +60,14 @@ def process_files(ped_path: str,
     n_bases_set = set([len(val) for val in sequences.values()])
     n_bases = next(iter(n_bases_set))
 
-    assert len(n_bases_set) == 1, "Not all species have the same number of bases!"
+    species_n_bases = {species: len(sequence) for species, sequence in sequences.items()}
+    n_bases_mode = Counter(species_n_bases.values()).most_common(1)[0][0]
+    species_not_mode = [species for species, n_bases in species_n_bases.items() if n_bases != n_bases_mode]
+
+    if species_not_mode:
+        raise InputError(f"The following species: {species_not_mode} have a different number of bases than the mode ({n_bases_mode}). Ensure the species name is correct and does not contain any extra spaces.")
+
+    assert len(n_bases_set) == 1, f"Not all species have the same number of bases! Numbers: {n_bases_set}"
 
     print("Parsed %i species with %i bases each" % (len(sequences), n_bases))
 
@@ -71,6 +88,9 @@ def process_files(ped_path: str,
         for i, species in enumerate(sequences):
             strand1 = sequences[species][::2]
             strand2 = sequences[species][1::2]
+
+            if len(strand1) != len(strand2):
+                print(f"WARNING: Species '{species}' has unequal strand lengths: {len(strand1)} and {len(strand2)}")
 
             assert len(strand1) == len(strand2), "The two strands contain an unequal number of elements! %i and %i" % (len(strand1), len(strand2))
 

@@ -9,8 +9,6 @@ from snp2str.exceptions import InputError
 # ped is required, the other two are optional
 REQUIRED_FORMATS = (".ped", ".txt", ".map")
 
-# TODO change CLI to accept populations and header as optional
-
 
 def validate_input_files(files: List) -> None:
     """
@@ -40,7 +38,8 @@ def main():
     parser.add_argument("files", nargs="*", help="List paths for .ped, .map and pop.txt file. "
                                                  "If omitted, will search for default files in current folder. ")
     parser.add_argument("--output", type=str, help="Path for the output file. Defaults to ./output.csv")
-    parser.add_argument("--skip-header", dest="header", action="store_false", help="Skip header row in output file.")
+    parser.add_argument("--skip-output-header", dest="header", action="store_false", help="Skip header row in output file.")
+    parser.add_argument("--skip-input-header", action="store_true", help="Skip the first line in the .ped input file.")
     args = parser.parse_args()
 
     if args.files:
@@ -61,9 +60,9 @@ def main():
                   pop_path=files_map.get("txt"),
                   map_path=files_map.get("map"),
                   add_header=args.header,
-                  output_path=args.output)
+                  output_path=args.output,
+                  skip_input_header=args.skip_input_header)
 
 
 if __name__ == "__main__":
     main()
-
