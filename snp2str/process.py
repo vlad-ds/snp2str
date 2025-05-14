@@ -10,7 +10,7 @@ def process_files(ped_path: str,
                   pop_path: str = None,
                   map_path: str = None,
                   add_header: bool = True,
-                  output_path: str = "output.csv",
+                  output_path: str = "output.txt",
                   skip_input_header: bool = False) -> None:
     """
 
@@ -24,7 +24,7 @@ def process_files(ped_path: str,
     """
 
     if not output_path:
-        output_path = "output.csv"
+        output_path = "output.txt"
 
     with open(os.path.join(os.path.dirname(__file__), 'bases_coding.json')) as file:
         bases_coding = json.load(file)

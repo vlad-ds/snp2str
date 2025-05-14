@@ -1,15 +1,15 @@
 # SNP2STR
 
-A Python tool for converting SNP genotype data in PED format to a format suitable for STRUCTURE analysis.
+A Python tool for converting SNP genotype data in PED file (.ped) format to a format suitable for STRUCTURE analysis.
 
 ## Overview
 
-SNP2STR processes genomic data files, specifically PED files containing SNP (Single Nucleotide Polymorphism) genotype data, and converts them into a format that can be used for population structure analysis with STRUCTURE software. The tool handles the conversion of nucleotide bases to numeric codes required by STRUCTURE.
+SNP2STR processes genomic data files, specifically PED files (.ped) containing SNP (Single Nucleotide Polymorphism) genotype data, and converts them into a format that can be used for population structure analysis with STRUCTURE software. The tool handles the conversion of nucleotide bases to numeric codes required by STRUCTURE.
 
 ## Features
 
-- Converts PED files to STRUCTURE input format
-- Supports optional population and map files
+- Converts PED files (.ped) to STRUCTURE input format
+- Supports optional POPULATION file (.txt) and MAP file (.map)
 - Validates input data for consistency
 - Handles nucleotide base coding conversion
 - Provides command-line interface for easy usage
@@ -36,7 +36,7 @@ pip install -e .
 ### Command Line Interface
 
 ```bash
-# Basic usage with a PED file
+# Basic usage with a PED file (.ped)
 snp2str path/to/your/file.ped
 
 # Using all optional files
@@ -48,7 +48,7 @@ snp2str path/to/your/file.ped --output custom_output.csv
 # Skip header in output file
 snp2str path/to/your/file.ped --skip-output-header
 
-# Skip first line in input PED file
+# Skip first line in input PED file (.ped)
 snp2str path/to/your/file.ped --skip-input-header
 ```
 
@@ -78,11 +78,11 @@ process_files(
    - Each row represents an individual
    - First 6 columns contain metadata, followed by genotype data
 
-2. **Population file (.txt)** - Optional
+2. **POPULATION file (.txt)** - Optional
    - Contains population information for each individual
    - One population identifier per line
 
-3. **Map file (.map)** - Optional
+3. **MAP file (.map)** - Optional
    - Contains marker information
    - Used to generate headers in the output file
 
