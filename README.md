@@ -18,11 +18,12 @@ SNP2STR processes genomic data files, specifically PED files (.ped) containing S
 ## Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/snp2str.git
-cd snp2str
+# Install from PyPI
+pip install snp2str
 
-# Install the package
+# Or clone the repository
+git clone https://github.com/vladgheorghe/snp2str.git
+cd snp2str
 pip install -e .
 ```
 
